@@ -1,0 +1,28 @@
+#!/bin/bash
+# Re-applies the golden ehomewei monitor state. Runs at boot and on monitor
+# hotplug (udev -> ehomewei-apply.service). Safe to run any time.
+set -u
+LOCK=/run/ehomewei-apply.lock
+exec 9>"$LOCK"; flock -n 9 || exit 0
+
+# 1) backlight unlock on every ehomewei control HID (fire-and-forget, no ACK)
+for attempt in 1 2 3; do
+    out=$(python3 /usr/local/bin/ehwctl_unlock.py 2>&1) && { echo "$out"; break; }
+    echo "$out"; sleep 3
+done
+
+# 2) golden DDC settings on every RTK (ehomewei) external display
+sleep 2
+for cur in $(ddcutil detect 2>/dev/null | python3 -c '
+import sys, re
+blocks = re.split(r"^Display (\d+)", sys.stdin.read(), flags=re.M)
+# blocks: [pre, n1, body1, n2, body2, ...]
+for i in range(1, len(blocks) - 1, 2):
+    if "RTK" in blocks[i + 1]:
+        print(blocks[i])
+'); do
+    ddcutil --sleep-multiplier 2 -d "$cur" setvcp 10 100 2>/dev/null  # brightness max
+    ddcutil --sleep-multiplier 2 -d "$cur" setvcp 12 50  2>/dev/null  # contrast
+    ddcutil --sleep-multiplier 2 -d "$cur" setvcp 14 5   2>/dev/null  # 6500K preset
+    logger -t ehwctl "applied golden DDC to display $cur"
+done

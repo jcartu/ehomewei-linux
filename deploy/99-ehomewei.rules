@@ -1,0 +1,9 @@
+# Re-apply ehomewei golden state (HID unlock + boost + DDC settings)
+# whenever a monitor's control HID appears — i.e. on every monitor plug-in.
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="056a", ATTR{idProduct}=="8191", TAG+="systemd", ENV{SYSTEMD_WANTS}+="ehomewei-apply.service"
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="1a2c", ATTR{idProduct}=="2d23", TAG+="systemd", ENV{SYSTEMD_WANTS}+="ehomewei-apply.service"
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="05ac", ATTR{idProduct}=="0265", TAG+="systemd", ENV{SYSTEMD_WANTS}+="ehomewei-apply.service"
+
+# Optional: also trigger when a display i2c bus appears (video-only replug).
+# Find your bus numbers with `ddcutil detect` and duplicate the pattern:
+# ACTION=="add", SUBSYSTEM=="i2c", KERNEL=="i2c-10", TAG+="systemd", ENV{SYSTEMD_WANTS}+="ehomewei-apply.service"

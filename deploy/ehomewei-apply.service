@@ -1,0 +1,10 @@
+[Unit]
+Description=Apply golden settings to ehomewei monitors
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ehomewei-apply
+
+[Install]
+WantedBy=multi-user.target
