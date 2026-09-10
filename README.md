@@ -128,3 +128,26 @@ solved in one session with **GLM-5.3 (Z.ai)** running in the **OMP (Oh My Pi)**
 agent harness, 2026-09-09. No Windows machine was harmed (or used).
 
 MIT License — see [LICENSE](LICENSE).
+
+## Update: best config for coding / text work (SDR pipeline)
+
+Empirical A/B on two identical panels side-by-side + corroborating published
+measurements (TFTCentral: HDR mode on SDR content skews gamma off 2.2 and
+collapses LCD contrast): **for text/coding, run the desktop in SDR, not HDR**.
+
+```
+kscreen-doctor output.DP-1.hdr.disable
+kscreen-doctor output.DP-2.hdr.disable
+```
+
+The vendor unlock (`02 0F 01`) + UltraHDR page-4 switch stay engaged either
+way — full backlight, ~409-nit peak — but near-white/light-grey separation
+(browser tabs, editor themes) is visibly better through the plain gamma-2.2
+SDR path on these edge-lit IPS panels. Re-enable per-display HDR only when
+viewing actual HDR content.
+
+Companion settings verified optimal for text work (all applied by this repo):
+DCR off, eyeshield/low-blue-light off, 6500K preset, contrast 50,
+sharpness 2/4. Note: the scaler's picture-mode ("displayMode", menu page 2
+item 5) is only changeable from the monitor's physical OSD buttons; write
+commands for it are firmware-gated, as are all menu writes except page 4.
